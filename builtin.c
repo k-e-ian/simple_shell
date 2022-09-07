@@ -1,12 +1,12 @@
 #include "shell.h"
 int (*get_builtin(char *command))(char **args, char **start);
-int _exit(char **args, char **start);
+int shell_exit(char **args, char **start);
 int _cd(char **args, char __attribute__((__unused__)) **start);
 int _help(char **args, char __attribute__((__unused__)) **start);
+int _alias(char **args, char __attribute__((__unused__)) **start);
 
 /**
- * get_builtin - Matches a command with a corresponding
- *               shellby builtin function.
+ * get_builtin - Matches a command with a corresponding builtin function
  * @command: The command to match.
  *
  * Return: A function pointer to the corresponding builtin.
@@ -14,13 +14,13 @@ int _help(char **args, char __attribute__((__unused__)) **start);
 int (*get_builtin(char *command))(char **args, char **start)
 {
 	builtin_t funcs[] = {
-		{ "exit", shellby_exit },
-		{ "env", shellby_env },
-		{ "setenv", shellby_setenv },
-		{ "unsetenv", shellby_unsetenv },
-		{ "cd", shellby_cd },
-		{ "alias", shellby_alias },
-		{ "help", shellby_help },
+		{ "exit", shell_exit },
+		{ "env", _env },
+		{ "setenv", _setenv },
+		{ "unsetenv", _unsetenv },
+		{ "cd", _cd },
+		{ "alias", _alias },
+		{ "help", _help },
 		{ NULL, NULL }
 	};
 	int i;
@@ -41,11 +41,11 @@ int (*get_builtin(char *command))(char **args, char **start)
  *
  * Return: If there are no arguments - -3.
  *         If the given exit value is invalid - 2.
- *         O/w - exits with the given status value.
+ *         otherwise - exits with the given status value.
  *
  * Description: Upon returning -3, the program exits back in the main function.
  */
-int _exit(char **args, char **start)
+int shell_exit(char **args, char **start)
 {
 	int i, len_of_int = 10;
 	unsigned int num = 0, max = 1 << (sizeof(int) * 8 - 1);
@@ -79,7 +79,7 @@ int _exit(char **args, char **start)
 }
 
 /**
- * _cd - Changes the current directory of the shellby process.
+ * _cd - Changes the current directory of the shell process.
  * @args: An array of arguments.
  * @start: A double pointer to the beginning of args.
  *
@@ -141,12 +141,12 @@ int _cd(char **args, char __attribute__((__unused__)) **start)
 
 	dir_info[0] = "OLDPWD";
 	dir_info[1] = oldpwd;
-	if (shellby_setenv(dir_info, dir_info) == -1)
+	if (_setenv(dir_info, dir_info) == -1)
 		return (-1);
 
 	dir_info[0] = "PWD";
 	dir_info[1] = pwd;
-	if (shellby_setenv(dir_info, dir_info) == -1)
+	if (_setenv(dir_info, dir_info) == -1)
 		return (-1);
 	if (args[0] && args[0][0] == '-' && args[0][1] != '-')
 	{
@@ -160,7 +160,7 @@ int _cd(char **args, char __attribute__((__unused__)) **start)
 }
 
 /**
- * _help - Displays information about shellby builtin commands.
+ * _help - Displays information about shell builtin commands.
  * @args: An array of arguments.
  * @start: A pointer to the beginning of args.
  *

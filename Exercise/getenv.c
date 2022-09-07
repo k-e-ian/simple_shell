@@ -33,8 +33,8 @@ char *_getenv(const char *var)
 
 int main(void)
 {
-	char *name = _getenv("PATH");
-	char *name1 = getenv("PATH");
+	char *name = _getenv("PWD");
+	char *name1 = getenv("PWD");
 
 	printf("%s\n%s\n", name, name1);
 	return (0);
